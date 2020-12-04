@@ -2,6 +2,7 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: cronjob-cleaner
+  namespace: monitoring
   labels:
     app: cronjob-cleaner
   annotations:
