@@ -13,7 +13,10 @@
             "env": {
                 "InCusterConfig": false,
                 "ActiveDeadlineSecond": 4200,
-                "LogTail": 100
+                "GetPodLogs": true,
+                "LogTail": 100,
+                "DeleteJob": true,
+                "DeletePod": true
             },
             "args": []
         }

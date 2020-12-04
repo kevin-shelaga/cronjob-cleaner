@@ -19,7 +19,7 @@ const (
 	logTail               = 100
 )
 
-//IsInCluster return true or false based on the InCluster env var
+//IsInCluster returns true or false based on the InCluster env var
 func IsInCluster() bool {
 	result := os.Getenv("InCusterConfig")
 
@@ -31,12 +31,12 @@ func IsInCluster() bool {
 	return false
 }
 
-//GetDateTime return date time now as string
+//GetDateTime returns date time now as string
 func GetDateTime() string {
 	return (time.Now().Format("2006-01-02 15:04:05.000"))
 }
 
-//GetActiveDeadlineSeconds return ActiveDeadlineSeconds env var or 4200
+//GetActiveDeadlineSeconds returns ActiveDeadlineSeconds env var or 4200
 func GetActiveDeadlineSeconds() float64 {
 	result := os.Getenv("ActiveDeadlineSecond")
 
@@ -47,7 +47,19 @@ func GetActiveDeadlineSeconds() float64 {
 	return activeDeadlineSeconds
 }
 
-//GetLogTail return LogTail env var or 100
+//ShouldGetPodLogs returns GetPodLogs env var or false
+func ShouldGetPodLogs() bool {
+	result := os.Getenv("GetPodLogs")
+
+	if result != "" {
+		b, _ := strconv.ParseBool(result)
+		return b
+	}
+
+	return false
+}
+
+//GetLogTail returns LogTail env var or 100
 func GetLogTail() int64 {
 	result := os.Getenv("LogTail")
 
@@ -56,4 +68,28 @@ func GetLogTail() int64 {
 		return f
 	}
 	return logTail
+}
+
+//ShouldDeleteJob returns GetPodLogs env var or false
+func ShouldDeleteJob() bool {
+	result := os.Getenv("DeleteJob")
+
+	if result != "" {
+		b, _ := strconv.ParseBool(result)
+		return b
+	}
+
+	return false
+}
+
+//ShouldDeletePod returns GetPodLogs env var or false
+func ShouldDeletePod() bool {
+	result := os.Getenv("DeletePod")
+
+	if result != "" {
+		b, _ := strconv.ParseBool(result)
+		return b
+	}
+
+	return false
 }

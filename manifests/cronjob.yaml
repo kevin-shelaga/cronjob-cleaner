@@ -1,0 +1,52 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cronjob-cleaner
+  labels:
+    app: cronjob-cleaner
+  annotations:
+    sidecar.istio.io/inject: "false"
+    linkerd.io/inject: disabled
+spec:
+  schedule: "*/1 * * * *"
+  startingDeadlineSeconds: 3600
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app: cronjob-cleaner
+      annotations:
+        sidecar.istio.io/inject: "false"
+        linkerd.io/inject: disabled
+    spec:
+      template:
+        metadata:
+          labels:
+            app: cronjob-cleaner
+          annotations:
+            sidecar.istio.io/inject: "false"
+            linkerd.io/inject: disabled
+        spec:
+          containers:
+            - name: cronjob-cleaner
+              image: devkws/cronjob-cleaner:tag
+              env:
+                - name: ENVIRONMENT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: backend-config
+                      key: ENVIRONMENT
+              resources:
+                limits:
+                  cpu: 200m
+                  memory: 0.2Gi
+                requests:
+                  cpu: 100m
+                  memory: 0.1Gi
+              terminationMessagePath: "/dev/termination-log"
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+              securityContext:
+                privileged: false
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 30

@@ -75,7 +75,7 @@ func Connect(inCluster bool) {
 			panic(err.Error())
 		}
 
-		// create the clientset
+		// creates the clientset
 		cs, err := kubernetes.NewForConfig(config)
 		if err != nil {
 			logging.Error(err.Error())
@@ -175,7 +175,7 @@ func GetJobsPod(job batch.Job) *core.PodList {
 //GetPodLogs logs a list of logs for a given pod name
 func GetPodLogs(pod core.Pod, tail *int64) {
 
-	logging.Information("Getting the last " + strconv.FormatInt(*tail, 16) + " for pod " + pod.Name)
+	logging.Information("Getting the last " + strconv.FormatInt(*tail, 10) + " logs for pod " + pod.Name)
 	for _, c := range pod.Spec.Containers {
 
 		req := clientset.CoreV1().Pods(pod.Namespace).GetLogs(pod.Name, &core.PodLogOptions{Container: c.Name, TailLines: tail})
@@ -204,4 +204,16 @@ func DeletePod(pod core.Pod) {
 		panic(derr.Error())
 	}
 	logging.Warning("Deleted pod " + pod.Name + "!")
+}
+
+//DeleteJob deletes pod from kubernetes
+func DeleteJob(job batch.Job) {
+
+	logging.Warning("Deleting job " + job.Name + "...")
+	derr := clientset.BatchV1().Jobs(job.Namespace).Delete(context.TODO(), job.Name, metav1.DeleteOptions{})
+	if derr != nil {
+		logging.Error(derr.Error())
+		panic(derr.Error())
+	}
+	logging.Warning("Deleted jod " + job.Name + "!")
 }

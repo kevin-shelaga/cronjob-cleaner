@@ -22,7 +22,7 @@ func main() {
 
 	for _, n := range namespaces {
 		logging.Information("Getting jobs in namespace " + n + "...")
-		jobsForCleanup := k8s.GetjobsForCleanup(n, 10)
+		jobsForCleanup := k8s.GetjobsForCleanup(n, activeDeadlineSeconds)
 
 		logging.Information(strconv.Itoa(len(jobsForCleanup)) + " jobs to cleanup from " + n + " namespace!")
 		for _, j := range jobsForCleanup {
@@ -31,10 +31,19 @@ func main() {
 			pods := k8s.GetJobsPod(j)
 
 			for _, p := range pods.Items {
-				tail := int64(100)
-				k8s.GetPodLogs(p, &tail)
 
-				k8s.DeletePod(p)
+				if helpers.ShouldGetPodLogs() {
+					tail := helpers.GetLogTail()
+					k8s.GetPodLogs(p, &tail)
+				}
+
+				if helpers.ShouldDeletePod() {
+					k8s.DeletePod(p)
+				}
+
+				if helpers.ShouldDeleteJob() {
+					k8s.DeleteJob(j)
+				}
 			}
 		}
 	}
