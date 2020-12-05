@@ -1,10 +1,10 @@
 # cronjob-cleaner
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![codecov](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner/branch/master/graph/badge.svg?token=D07EP88G53)](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner)
+[![codecov](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner/branch/master/graph/badge.svg?token=D07EP88G53)](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner)[![Go Report Card](https://goreportcard.com/badge/github.com/kevin-shelaga/cronjob-cleaner)](https://goreportcard.com/report/github.com/kevin-shelaga/cronjob-cleaner)
 
 ## Why
 
-I wrote this cleaner as a way to delete pods for job that got "stuck", jobs that just seemed to stop doing anything but the job and pod were both in a running state for hours.
+I wrote this cleaner as a way to delete pods for jobs that got "stuck", jobs that just seemed to stop doing anything but the job and pod were both in a running state for hours. The activeDeadlineSecond would delete the job, but this wouldnt resolve any alerts from alert manager. This project is my fix, and a good excuse to write go.
 
 ## How
 
@@ -22,11 +22,16 @@ to false.
 
 ### Run as cronjob in kubernetes
 
-#### Apply to kubernetes
+#### Use Kustomize
 
 ```sh
-    kubectl apply -f ./manifests/namespace.yaml
-    kubectl apply -f ./manifests/cronjob.yaml
+curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_30_linux_amd64
+chmod u+x ./kustomi
+
+cp -a ./manifests/. .
+
+./kustomize edit set image kevinshelaga/$IMAGE:tag=kevinshelaga/$IMAGE:latest
+./kustomize build . | kubectl -n $K8S_NAMESPACE apply -f -
 ```
 
 ## Whats left

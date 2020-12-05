@@ -24,7 +24,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth" //all auths
 )
 
-//K interace for k8s package
+//K interface for k8s package
 type K interface {
 	Connect(inCluster bool)
 	GetNamespaces() []string
