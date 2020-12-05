@@ -30,7 +30,7 @@ spec:
         spec:
           containers:
             - name: cronjob-cleaner
-              image: devkws/cronjob-cleaner:tag
+              image: kevinshelaga/cronjob-cleaner:latest
               env:
                 - name: ENVIRONMENT
                   valueFrom:
