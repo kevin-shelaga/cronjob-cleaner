@@ -1,6 +1,6 @@
 # cronjob-cleaner
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![codecov](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner/branch/master/graph/badge.svg?token=D07EP88G53)](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner)
+[![codecov](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner/branch/master/graph/badge.svg?token=D07EP88G53)](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner)[![Go Report Card](https://goreportcard.com/badge/github.com/kevin-shelaga/cronjob-cleaner)](https://goreportcard.com/report/github.com/kevin-shelaga/cronjob-cleaner)
 
 ## Why
 

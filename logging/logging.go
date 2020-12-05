@@ -6,7 +6,7 @@ import (
 	helpers "github.com/kevin-shelaga/cronjob-cleaner/helpers"
 )
 
-//L interace for logging package
+//L interface for logging package
 type L interface {
 	Information(message string)
 	Warning(message string)

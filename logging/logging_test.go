@@ -1,9 +1,10 @@
 package logging
 
 import (
-	"testing"
 	"errors"
+	"testing"
 )
+
 func TestInformation(t *testing.T) {
 
 	Information("test")
@@ -24,7 +25,6 @@ func BenchmarkWarning(t *testing.B) {
 	Warning("test")
 }
 
-
 func TestError(t *testing.T) {
 
 	Error("test")
@@ -34,7 +34,6 @@ func BenchmarkError(t *testing.B) {
 
 	Error("test")
 }
-
 
 func TestCritical(t *testing.T) {
 

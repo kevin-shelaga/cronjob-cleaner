@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//H interace for helpers package
+//H interface for helpers package
 type H interface {
 	IsInCluster() bool
 	GetDateTime() string
