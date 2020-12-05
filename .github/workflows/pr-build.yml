@@ -2,7 +2,10 @@ name: pr-build
 
 on:
   push:
-    branches: ["!master"]
+    branches: 
+      - '*'
+      - '!master'
+
 
 env:
   IMAGE: cronjob-cleaner
