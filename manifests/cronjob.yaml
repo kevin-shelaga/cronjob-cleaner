@@ -30,13 +30,20 @@ spec:
         spec:
           containers:
             - name: cronjob-cleaner
-              image: kevinshelaga/cronjob-cleaner:latest
+              image: kevinshelaga/cronjob-cleaner:tag
               env:
-                - name: ENVIRONMENT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: backend-config
-                      key: ENVIRONMENT
+                - name: InCusterConfig
+                  value: "true"
+                - name: "ActiveDeadlineSecond"
+                  value: "4200"
+                - name: "GetPodLogs"
+                  value: "true"
+                - name: "LogTail"
+                  value: "100"
+                - name: "DeleteJob"
+                  value: "false"
+                - name: "DeletePod"
+                  value: "true" 
               resources:
                 limits:
                   cpu: 200m
