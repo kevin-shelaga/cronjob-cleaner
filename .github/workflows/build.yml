@@ -28,13 +28,10 @@ jobs:
 
       - uses: codecov/codecov-action@v1
         with:
-          file: ./coverage.txt
-          flags: unittests
-          name: codecov-umbrella 
-          fail_ci_if_error: true 
-          verbose: true 
-
-      - run: bash <(curl -s https://codecov.io/bash)
+          directory: .
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          verbose: false
 
       - run: go get
 
