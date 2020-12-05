@@ -42,8 +42,6 @@ jobs:
           docker build . \
             --tag "kevinshelaga/$IMAGE:${{ github.run_number }}" \
             --tag "kevinshelaga/$IMAGE:latest"
-            --build-arg GITHUB_SHA="$GITHUB_SHA" \
-            --build-arg GITHUB_REF="$GITHUB_REF" \
 
       - name: Set up Kustomize
         run: |-
