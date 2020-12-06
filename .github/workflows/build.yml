@@ -9,6 +9,7 @@ on:
 env:
   IMAGE: cronjob-cleaner
   K8S_NAMESPACE: monitoring
+  VERSION: 0.1-alpine3.12
 
 jobs:
   build:
@@ -43,7 +44,7 @@ jobs:
       - name: Build
         run: |-
           docker build . \
-            --tag "kevinshelaga/$IMAGE:${{ github.run_number }}" \
+            --tag "kevinshelaga/$IMAGE:$VERSION" \
             --tag "kevinshelaga/$IMAGE:latest"
 
       - name: Set up Kustomize
@@ -56,10 +57,10 @@ jobs:
 
       - name: Deploy
         run: |-
-          ./kustomize edit set image kevinshelaga/$IMAGE:tag=kevinshelaga/$IMAGE:${{ github.run_number }}
+          ./kustomize edit set image kevinshelaga/$IMAGE:tag=kevinshelaga/$IMAGE:$VERSION
           ./kustomize build . | kubectl -n $K8S_NAMESPACE apply -f -
 
       - name: Push
         run: |-
-          docker push "kevinshelaga/$IMAGE:${{ github.run_number }}"
+          docker push "kevinshelaga/$IMAGE:$VERSION"
           docker push "kevinshelaga/$IMAGE:latest"
