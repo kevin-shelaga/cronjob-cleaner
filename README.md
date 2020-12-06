@@ -32,8 +32,8 @@ chmod u+x ./kustomi
 
 cp -a ./manifests/. .
 
-./kustomize edit set image kevinshelaga/$IMAGE:tag=kevinshelaga/$IMAGE:latest
-./kustomize build . | kubectl -n $K8S_NAMESPACE apply -f -
+./kustomize edit set image kevinshelaga/cronjob-cleaner:tag=kevinshelaga/cronjob-cleaner:latest
+./kustomize build . | kubectl -n monitoring apply -f -
 ```
 
 ## Whats left
