@@ -26,12 +26,7 @@ jobs:
 
       - run: go test -v ./... -coverprofile="coverage.txt" -covermode=atomic
 
-      - uses: codecov/codecov-action@v1
-        with:
-          directory: .
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          verbose: false
+      - run: bash <(curl -s https://codecov.io/bash)
 
       - run: go get
 
