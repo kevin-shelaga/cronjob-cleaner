@@ -1,8 +1,12 @@
-# cronjob-cleaner
+# CronJob Cleaner
+
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kevin-shelaga/cronjob-cleaner)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kevin-shelaga/cronjob-cleaner)](https://goreportcard.com/report/github.com/kevin-shelaga/cronjob-cleaner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner/branch/master/graph/badge.svg?token=D07EP88G53)](https://codecov.io/gh/kevin-shelaga/cronjob-cleaner)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kevin-shelaga/cronjob-cleaner)](https://goreportcard.com/report/github.com/kevin-shelaga/cronjob-cleaner)
 ![build](https://github.com/kevin-shelaga/cronjob-cleaner/workflows/build/badge.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/kevinshelaga/cronjob-cleaner)
+![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/kevinshelaga/cronjob-cleaner)
 
 ## Why
 

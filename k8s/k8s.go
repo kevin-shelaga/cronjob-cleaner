@@ -34,6 +34,10 @@ type K interface {
 	DeletePod(pod core.Pod)
 }
 
+// type client struct {
+// 	clientset *kubernetes.Clientset
+// }
+
 //Client for kubernetes calls
 var clientset *kubernetes.Clientset = nil
 

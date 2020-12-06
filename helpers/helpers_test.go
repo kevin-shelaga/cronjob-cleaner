@@ -11,6 +11,14 @@ func TestIsInCluster(t *testing.T) {
 	if result != false {
 		t.Errorf("IsInCluster() = true; want false")
 	}
+
+	os.Setenv("IsInCluster", "true")
+
+	result = IsInCluster()
+
+	if result != true {
+		t.Errorf("IsInCluster() should match env var")
+	}
 }
 
 func BenchmarkIsInCluster(t *testing.B) {
