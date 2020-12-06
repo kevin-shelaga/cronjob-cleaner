@@ -62,4 +62,4 @@ jobs:
       - name: Push
         run: |-
           docker push "kevinshelaga/$IMAGE:${{ github.run_number }}"
-          docker push "kevinshelaga/$IMAGE:latest
+          docker push "kevinshelaga/$IMAGE:latest"
