@@ -1,18 +1,18 @@
 name: build
 
 on:
-  # push:
-  #   branches: [master]
-  pull_request:
-    types: [closed]
+  push:
+    branches: [master]
+  # pull_request:
+  #   types: [closed]
 
 env:
-  IMAGE: alerter-sender
+  IMAGE: cronjob-cleaner
   K8S_NAMESPACE: monitoring
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
