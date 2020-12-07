@@ -26,6 +26,8 @@ jobs:
 
       - run: go test -v ./... -coverprofile="coverage.txt" -covermode=atomic
 
+      - run: bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
+
       - run: go get
 
       - run: go install
