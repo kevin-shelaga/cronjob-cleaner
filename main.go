@@ -15,34 +15,36 @@ func main() {
 	var activeDeadlineSeconds = helpers.GetActiveDeadlineSeconds()
 	logging.Information("Active deadline seconds set as " + strconv.FormatFloat(activeDeadlineSeconds, 'f', 6, 64))
 
-	k8s.Connect(helpers.IsInCluster())
+	var k k8s.KubernetesAPI = k8s.KubernetesAPI{Clientset: nil}
+
+	k.Clientset = k.Connect(helpers.IsInCluster())
 
 	logging.Information("Getting namespaces...")
-	namespaces := k8s.GetNamespaces()
+	namespaces := k.GetNamespaces()
 
 	for _, n := range namespaces {
 		logging.Information("Getting jobs in namespace " + n + "...")
-		jobsForCleanup := k8s.GetjobsForCleanup(n, activeDeadlineSeconds)
+		jobsForCleanup := k.GetjobsForCleanup(n, activeDeadlineSeconds)
 
 		logging.Information(strconv.Itoa(len(jobsForCleanup)) + " jobs to cleanup from " + n + " namespace!")
 		for _, j := range jobsForCleanup {
 			logging.Warning("Cleaning up job " + j.Name + "...")
 
-			pods := k8s.GetJobsPod(j)
+			pods := k.GetJobsPod(j)
 
 			for _, p := range pods.Items {
 
 				if helpers.ShouldGetPodLogs() {
 					tail := helpers.GetLogTail()
-					k8s.GetPodLogs(p, &tail)
+					k.GetPodLogs(p, &tail)
 				}
 
 				if helpers.ShouldDeletePod() {
-					k8s.DeletePod(p)
+					k.DeletePod(p)
 				}
 
 				if helpers.ShouldDeleteJob() {
-					k8s.DeleteJob(j)
+					k.DeleteJob(j)
 				}
 			}
 		}

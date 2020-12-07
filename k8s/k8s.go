@@ -24,9 +24,9 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth" //all auths
 )
 
-//K interface for k8s package
-type K interface {
-	Connect(inCluster bool)
+//k8s interface for k8s package
+type k8s interface {
+	Connect(inCluster bool) *kubernetes.Clientset
 	GetNamespaces() []string
 	GetjobsForCleanup(namespace string, activeDeadlineSeconds float64) []batch.Job
 	GetJobsPod(job batch.Job) *core.PodList
@@ -34,13 +34,17 @@ type K interface {
 	DeletePod(pod core.Pod)
 }
 
-//Client for kubernetes calls
-var clientset *kubernetes.Clientset = nil
+//KubernetesAPI is the struct for k8s
+type KubernetesAPI struct {
+	Clientset *kubernetes.Clientset
+}
 
 //Connect returns new kubernetes Client
-func Connect(inCluster bool) {
+func (k KubernetesAPI) Connect(inCluster bool) *kubernetes.Clientset {
 
-	if clientset == nil && inCluster {
+	var clientset *kubernetes.Clientset
+
+	if k.Clientset == nil && inCluster {
 		logging.Information("In cluster config will be used!")
 		logging.Information("Connecting...")
 		// creates the in-cluster config
@@ -49,15 +53,16 @@ func Connect(inCluster bool) {
 			logging.Error(err.Error())
 			panic(err.Error())
 		}
-		// creates the clientset
+		// creates the Clientset
 		cs, err := kubernetes.NewForConfig(config)
 		if err != nil {
 			logging.Error(err.Error())
 			panic(err.Error())
 		}
+
 		clientset = cs
 		logging.Information("Connected!")
-	} else if clientset == nil && !inCluster {
+	} else if k.Clientset == nil && !inCluster {
 		logging.Information("Out of cluster config will be used!")
 		logging.Information("Connecting...")
 		var kubeconfig *string
@@ -75,22 +80,25 @@ func Connect(inCluster bool) {
 			panic(err.Error())
 		}
 
-		// creates the clientset
+		// creates the Clientset
 		cs, err := kubernetes.NewForConfig(config)
 		if err != nil {
 			logging.Error(err.Error())
 			panic(err.Error())
 		}
+
 		clientset = cs
 		logging.Information("Connected!")
 	}
+
+	return clientset
 }
 
 //GetNamespaces returns slice of all namespaces
-func GetNamespaces() []string {
+func (k KubernetesAPI) GetNamespaces() []string {
 	var result []string
 
-	namespaces, err := clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+	namespaces, err := k.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logging.Error(err.Error())
 		panic(err.Error())
@@ -116,11 +124,11 @@ func GetNamespaces() []string {
 }
 
 //GetjobsForCleanup return list of jobs in the requested namespace that exceed the max run time in second
-func GetjobsForCleanup(namespace string, activeDeadlineSeconds float64) []batch.Job {
+func (k KubernetesAPI) GetjobsForCleanup(namespace string, activeDeadlineSeconds float64) []batch.Job {
 
 	var jobsToCleanup []batch.Job
 
-	jobs, err := clientset.BatchV1().Jobs(namespace).List(context.TODO(), metav1.ListOptions{})
+	jobs, err := k.Clientset.BatchV1().Jobs(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logging.Error(err.Error())
 		panic(err.Error())
@@ -153,9 +161,9 @@ func GetjobsForCleanup(namespace string, activeDeadlineSeconds float64) []batch.
 }
 
 //GetJobsPod gets the pod associated to a job based on the job-name label
-func GetJobsPod(job batch.Job) *core.PodList {
+func (k KubernetesAPI) GetJobsPod(job batch.Job) *core.PodList {
 
-	pods, err := clientset.CoreV1().Pods(job.Namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: "job-name=" + job.Name})
+	pods, err := k.Clientset.CoreV1().Pods(job.Namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: "job-name=" + job.Name})
 	if err != nil {
 		logging.Error(err.Error())
 		panic(err.Error())
@@ -173,12 +181,12 @@ func GetJobsPod(job batch.Job) *core.PodList {
 }
 
 //GetPodLogs logs a list of logs for a given pod name
-func GetPodLogs(pod core.Pod, tail *int64) {
+func (k KubernetesAPI) GetPodLogs(pod core.Pod, tail *int64) {
 
 	logging.Information("Getting the last " + strconv.FormatInt(*tail, 10) + " logs for pod " + pod.Name)
 	for _, c := range pod.Spec.Containers {
 
-		req := clientset.CoreV1().Pods(pod.Namespace).GetLogs(pod.Name, &core.PodLogOptions{Container: c.Name, TailLines: tail})
+		req := k.Clientset.CoreV1().Pods(pod.Namespace).GetLogs(pod.Name, &core.PodLogOptions{Container: c.Name, TailLines: tail})
 		podLogs, err := req.Stream(context.TODO())
 		if err != nil {
 			logging.Error("error in opening stream")
@@ -195,10 +203,10 @@ func GetPodLogs(pod core.Pod, tail *int64) {
 }
 
 //DeletePod deletes pod from kubernetes
-func DeletePod(pod core.Pod) {
+func (k KubernetesAPI) DeletePod(pod core.Pod) {
 
 	logging.Warning("Deleting pod " + pod.Name + "...")
-	derr := clientset.CoreV1().Pods(pod.Namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
+	derr := k.Clientset.CoreV1().Pods(pod.Namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
 	if derr != nil {
 		logging.Error(derr.Error())
 		panic(derr.Error())
@@ -207,10 +215,10 @@ func DeletePod(pod core.Pod) {
 }
 
 //DeleteJob deletes pod from kubernetes
-func DeleteJob(job batch.Job) {
+func (k KubernetesAPI) DeleteJob(job batch.Job) {
 
 	logging.Warning("Deleting job " + job.Name + "...")
-	derr := clientset.BatchV1().Jobs(job.Namespace).Delete(context.TODO(), job.Name, metav1.DeleteOptions{})
+	derr := k.Clientset.BatchV1().Jobs(job.Namespace).Delete(context.TODO(), job.Name, metav1.DeleteOptions{})
 	if derr != nil {
 		logging.Error(derr.Error())
 		panic(derr.Error())
