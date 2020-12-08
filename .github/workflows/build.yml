@@ -23,12 +23,6 @@ jobs:
 
       - run: kubectl apply -f ./manifests/busybox.yaml
 
-      - run: echo "ActiveDeadlineSecond=0" >> $GITHUB_ENV
-
-      - run: echo "DeleteJob=true" >> $GITHUB_ENV
-
-      - run: echo "DeletePod=true" >> $GITHUB_ENV
-
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.15.6"

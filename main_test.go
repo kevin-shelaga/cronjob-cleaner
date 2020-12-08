@@ -1,11 +1,15 @@
 package main
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestMain(t *testing.T) {
-	main()
-}
+	os.Setenv("InCusterConfig", "false")
+	os.Setenv("ActiveDeadlineSecond", "0")
+	os.Setenv("DeleteJob", "true")
+	os.Setenv("DeletePod", "true")
 
-func BenchmarkMain(t *testing.B) {
 	main()
 }

@@ -164,7 +164,11 @@ func TestGetjobsForCleanup(t *testing.T) {
 		return true, &batch.JobList{}, errors.New("Error deleting jobs")
 	})
 
-	k.DeleteJob(*job)
+	result = k.GetjobsForCleanup("default", 0)
+
+	if result != nil {
+		t.Errorf("result should be nil")
+	}
 }
 
 func TestGetJobsPod(t *testing.T) {
