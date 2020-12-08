@@ -13,7 +13,6 @@ import (
 
 	batch "k8s.io/api/batch/v1"
 	core "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kubernetes "k8s.io/client-go/kubernetes"
 
@@ -36,13 +35,13 @@ type k8s interface {
 
 //KubernetesAPI is the struct for k8s
 type KubernetesAPI struct {
-	Clientset *kubernetes.Clientset
+	Clientset kubernetes.Interface
 }
 
 //Connect returns new kubernetes Client
-func (k KubernetesAPI) Connect(inCluster bool) *kubernetes.Clientset {
+func (k KubernetesAPI) Connect(inCluster bool) kubernetes.Interface {
 
-	var clientset *kubernetes.Clientset
+	var clientset kubernetes.Interface
 
 	if k.Clientset == nil && inCluster {
 		logging.Information("In cluster config will be used!")
@@ -101,23 +100,12 @@ func (k KubernetesAPI) GetNamespaces() []string {
 	namespaces, err := k.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logging.Error(err.Error())
-		panic(err.Error())
 	}
 	logging.Information("There is " + strconv.Itoa(len(namespaces.Items)) + " namespace(s) in the cluster!")
 
-	if errors.IsNotFound(err) {
-		logging.Error("No namespaces found")
-	} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-		logging.Error("Error getting namespaces: " + statusError.ErrStatus.Message)
-	} else if err != nil {
-		logging.Error(err.Error())
-		panic(err.Error())
-	} else {
-
-		for _, n := range namespaces.Items {
-			logging.Information(n.Name)
-			result = append(result, n.Name)
-		}
+	for _, n := range namespaces.Items {
+		logging.Information(n.Name)
+		result = append(result, n.Name)
 	}
 
 	return result
@@ -131,29 +119,19 @@ func (k KubernetesAPI) GetjobsForCleanup(namespace string, activeDeadlineSeconds
 	jobs, err := k.Clientset.BatchV1().Jobs(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		logging.Error(err.Error())
-		panic(err.Error())
 	}
 	logging.Information("There is " + strconv.Itoa(len(jobs.Items)) + " job(s) in the " + namespace + " namespace!")
 
-	if errors.IsNotFound(err) {
-		logging.Error("No jobs found")
-	} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-		logging.Error("Error getting jobs: " + statusError.ErrStatus.Message)
-	} else if err != nil {
-		logging.Error(err.Error())
-		panic(err.Error())
-	} else {
-		for _, j := range jobs.Items {
-			if j.Status.Active == 1 && j.Status.Failed == 0 && j.Status.CompletionTime == nil {
-				if time.Now().Sub(j.CreationTimestamp.UTC()).Seconds() > activeDeadlineSeconds {
-					logging.Warning("Job " + j.Name + " has been running for " + strconv.FormatFloat(time.Now().Sub(j.CreationTimestamp.UTC()).Seconds(), 'f', 6, 64) + " seconds and has been flagged for cleanup due to exceeding the active deadline seconds of " + strconv.FormatFloat(activeDeadlineSeconds, 'f', 6, 64))
-					jobsToCleanup = append(jobsToCleanup, j)
-				} else {
-					logging.Information("Job " + j.Name + " has been running for " + strconv.FormatFloat(time.Now().Sub(j.CreationTimestamp.UTC()).Seconds(), 'f', 6, 64) + " seconds and has not exceeded the active deadline seconds of " + strconv.FormatFloat(activeDeadlineSeconds, 'f', 6, 64))
-				}
+	for _, j := range jobs.Items {
+		if j.Status.Active == 1 && j.Status.Failed == 0 && j.Status.CompletionTime == nil {
+			if time.Now().Sub(j.CreationTimestamp.UTC()).Seconds() > activeDeadlineSeconds {
+				logging.Warning("Job " + j.Name + " has been running for " + strconv.FormatFloat(time.Now().Sub(j.CreationTimestamp.UTC()).Seconds(), 'f', 6, 64) + " seconds and has been flagged for cleanup due to exceeding the active deadline seconds of " + strconv.FormatFloat(activeDeadlineSeconds, 'f', 6, 64))
+				jobsToCleanup = append(jobsToCleanup, j)
 			} else {
-				logging.Information("Job " + j.Name + " is not active")
+				logging.Information("Job " + j.Name + " has been running for " + strconv.FormatFloat(time.Now().Sub(j.CreationTimestamp.UTC()).Seconds(), 'f', 6, 64) + " seconds and has not exceeded the active deadline seconds of " + strconv.FormatFloat(activeDeadlineSeconds, 'f', 6, 64))
 			}
+		} else {
+			logging.Information("Job " + j.Name + " is not active")
 		}
 	}
 
@@ -166,17 +144,18 @@ func (k KubernetesAPI) GetJobsPod(job batch.Job) *core.PodList {
 	pods, err := k.Clientset.CoreV1().Pods(job.Namespace).List(context.TODO(), metav1.ListOptions{LabelSelector: "job-name=" + job.Name})
 	if err != nil {
 		logging.Error(err.Error())
-		panic(err.Error())
+
+		return nil
 	}
 
 	if len(pods.Items) > 1 {
 		logging.Error("Found more than 1 pod matching label " + ("job-name:" + job.Name) + ", cleanup will be skipped")
 
 		return nil
-	}
+	} 
 
-	logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
-
+		logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
+	
 	return pods
 }
 
@@ -209,7 +188,6 @@ func (k KubernetesAPI) DeletePod(pod core.Pod) {
 	derr := k.Clientset.CoreV1().Pods(pod.Namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
 	if derr != nil {
 		logging.Error(derr.Error())
-		panic(derr.Error())
 	}
 	logging.Warning("Deleted pod " + pod.Name + "!")
 }
@@ -221,7 +199,6 @@ func (k KubernetesAPI) DeleteJob(job batch.Job) {
 	derr := k.Clientset.BatchV1().Jobs(job.Namespace).Delete(context.TODO(), job.Name, metav1.DeleteOptions{})
 	if derr != nil {
 		logging.Error(derr.Error())
-		panic(derr.Error())
 	}
 	logging.Warning("Deleted jod " + job.Name + "!")
 }
