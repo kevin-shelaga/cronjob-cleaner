@@ -39,6 +39,7 @@ chmod u+x ./kustomize
 cp -a ./manifests/. .
 
 ./kustomize edit set image kevinshelaga/cronjob-cleaner:tag=kevinshelaga/cronjob-cleaner:latest
+
 ./kustomize build . | kubectl -n monitoring apply -f -
 ```
 

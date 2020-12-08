@@ -28,6 +28,7 @@ spec:
             sidecar.istio.io/inject: "false"
             linkerd.io/inject: disabled
         spec:
+          serviceAccountName: cronjob-cleaner
           containers:
             - name: cronjob-cleaner
               image: kevinshelaga/cronjob-cleaner:tag
