@@ -15,5 +15,5 @@ spec:
               args:
                 - /bin/sh
                 - -c
-                - date; echo Hello from the Kubernetes cluster
+                - date; echo Sleeping 1000; sleep 1000
           restartPolicy: OnFailure
