@@ -153,7 +153,7 @@ func TestGetjobsForCleanup(t *testing.T) {
 	k.Clientset = fake.NewSimpleClientset(namespace, job)
 	result = k.GetjobsForCleanup("default", 0)
 
-	if result != nil {
+	if result == nil {
 		t.Errorf("result should not be nil")
 	}
 }
