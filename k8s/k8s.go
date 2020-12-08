@@ -152,10 +152,10 @@ func (k KubernetesAPI) GetJobsPod(job batch.Job) *core.PodList {
 		logging.Error("Found more than 1 pod matching label " + ("job-name:" + job.Name) + ", cleanup will be skipped")
 
 		return nil
-	} 
+	}
 
-		logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
-	
+	logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
+
 	return pods
 }
 
@@ -188,6 +188,7 @@ func (k KubernetesAPI) DeletePod(pod core.Pod) {
 	derr := k.Clientset.CoreV1().Pods(pod.Namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
 	if derr != nil {
 		logging.Error(derr.Error())
+		return
 	}
 	logging.Warning("Deleted pod " + pod.Name + "!")
 }
@@ -199,6 +200,7 @@ func (k KubernetesAPI) DeleteJob(job batch.Job) {
 	derr := k.Clientset.BatchV1().Jobs(job.Namespace).Delete(context.TODO(), job.Name, metav1.DeleteOptions{})
 	if derr != nil {
 		logging.Error(derr.Error())
+		return
 	}
 	logging.Warning("Deleted jod " + job.Name + "!")
 }

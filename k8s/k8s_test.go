@@ -285,42 +285,125 @@ func TestGetJobsPod(t *testing.T) {
 
 }
 
-// func TestGetPodLogs(t *testing.T) {
+func TestGetPodLogs(t *testing.T) {
 
-// 	GetPodLogs(p, &logTail)
+	//get one pods logs
+	var k KubernetesAPI = KubernetesAPI{Clientset: nil}
 
-// }
+	namespace := &core.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "default",
+			Annotations: map[string]string{},
+		},
+	}
 
-// func TestDeletePod(t *testing.T) {
+	var label = map[string]string{}
+	label["job-name"] = "default"
 
-// 	Connect(false)
-// 	namespaces := GetNamespaces()
+	var containers []core.Container
+	var container = new(core.Container)
+	container.Name = "default"
+	containers = append(containers, *container)
 
-// 	for _, n := range namespaces {
-// 		jobs := GetjobsForCleanup(n, 4200)
+	pod := &core.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:              "default",
+			Namespace:         "default",
+			Annotations:       map[string]string{},
+			Labels:            label,
+			CreationTimestamp: metav1.NewTime(time.Now()),
+		},
+		Spec: core.PodSpec{
+			Containers: containers,
+		},
+	}
 
-// 		for _, j := range jobs {
-// 			pods := GetJobsPod(j)
+	k.Clientset = fake.NewSimpleClientset(namespace, pod)
+	tail := new(int64)
+	k.GetPodLogs(*pod, tail)
+}
 
-// 			for _, p := range pods.Items {
+func TestDeletePod(t *testing.T) {
 
-// 				DeletePod(p)
-// 			}
-// 		}
-// 	}
-// }
+	//delete one pod
+	var k KubernetesAPI = KubernetesAPI{Clientset: nil}
 
-// func TestDeleteJob(t *testing.T) {
+	namespace := &core.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "default",
+			Annotations: map[string]string{},
+		},
+	}
 
-// 	Connect(false)
-// 	namespaces := GetNamespaces()
+	var label = map[string]string{}
+	label["job-name"] = "default"
 
-// 	for _, n := range namespaces {
-// 		jobs := GetjobsForCleanup(n, 4200)
+	var containers []core.Container
+	var container = new(core.Container)
+	container.Name = "default"
+	containers = append(containers, *container)
 
-// 		for _, j := range jobs {
+	pod := &core.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:              "default",
+			Namespace:         "default",
+			Annotations:       map[string]string{},
+			Labels:            label,
+			CreationTimestamp: metav1.NewTime(time.Now()),
+		},
+		Spec: core.PodSpec{
+			Containers: containers,
+		},
+	}
 
-// 			DeleteJob(j)
-// 		}
-// 	}
-// }
+	k.Clientset = fake.NewSimpleClientset(namespace, pod)
+	k.DeletePod(*pod)
+
+	//delete pod error
+	k.Clientset = fake.NewSimpleClientset()
+
+	k.Clientset.CoreV1().(*fakecore.FakeCoreV1).PrependReactor("delete", "pods", func(action k8stesting.Action) (handled bool, ret runtime.Object, err error) {
+		return true, &core.Pod{}, errors.New("Error deleting pod")
+	})
+
+	k.DeletePod(*pod)
+}
+
+func TestDeleteJob(t *testing.T) {
+
+	//delete one pod
+	var k KubernetesAPI = KubernetesAPI{Clientset: nil}
+
+	namespace := &core.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "default",
+			Annotations: map[string]string{},
+		},
+	}
+
+	job := &batch.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:              "default",
+			Namespace:         "default",
+			Annotations:       map[string]string{},
+			CreationTimestamp: metav1.NewTime(time.Now()),
+		},
+		Status: batch.JobStatus{
+			Active:         1,
+			Failed:         0,
+			CompletionTime: nil,
+		},
+	}
+
+	k.Clientset = fake.NewSimpleClientset(namespace, job)
+	k.DeleteJob(*job)
+
+	//delete pod error
+	k.Clientset = fake.NewSimpleClientset()
+
+	k.Clientset.CoreV1().(*fakecore.FakeCoreV1).PrependReactor("delete", "jobs", func(action k8stesting.Action) (handled bool, ret runtime.Object, err error) {
+		return true, &batch.Job{}, errors.New("Error deleting jobs")
+	})
+
+	k.DeleteJob(*job)
+}
