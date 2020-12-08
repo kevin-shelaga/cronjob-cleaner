@@ -31,8 +31,10 @@ to false.
 #### Use Kustomize
 
 ```sh
-curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_30_linux_amd64
-chmod u+x ./kustomi
+curl -s "https://raw.githubusercontent.com/\
+kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+
+chmod u+x ./kustomize
 
 cp -a ./manifests/. .
 
