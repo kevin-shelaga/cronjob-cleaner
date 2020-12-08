@@ -20,6 +20,10 @@ jobs:
 
       - uses: engineerd/setup-kind@v0.5.0
 
+      - run: kubectl apply -f ./manifests/busybox.yaml
+
+      - run: echo "ActiveDeadlineSecond=0" >> $GITHUB_ENV
+
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.15.6"

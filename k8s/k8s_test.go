@@ -156,6 +156,15 @@ func TestGetjobsForCleanup(t *testing.T) {
 	if result == nil {
 		t.Errorf("result should not be nil")
 	}
+
+	//no job - error
+	k.Clientset = fake.NewSimpleClientset()
+
+	k.Clientset.CoreV1().(*fakecore.FakeCoreV1).PrependReactor("list", "jobs", func(action k8stesting.Action) (handled bool, ret runtime.Object, err error) {
+		return true, &batch.JobList{}, errors.New("Error deleting jobs")
+	})
+
+	k.DeleteJob(*job)
 }
 
 func TestGetJobsPod(t *testing.T) {
@@ -321,6 +330,15 @@ func TestGetPodLogs(t *testing.T) {
 	k.Clientset = fake.NewSimpleClientset(namespace, pod)
 	tail := new(int64)
 	k.GetPodLogs(*pod, tail)
+
+	//error
+	// k.Clientset = fake.NewSimpleClientset(namespace, pod)
+
+	// k.Clientset.CoreV1().(*fakecore.FakeCoreV1).PrependReactor("get", "podlogs", func(action k8stesting.Action) (handled bool, ret runtime.Object, err error) {
+	// 	return true, &rest.Request{}, errors.New("Error getting pod logs")
+	// })
+
+	// k.GetPodLogs(*pod, tail)
 }
 
 func TestDeletePod(t *testing.T) {
