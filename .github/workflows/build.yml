@@ -23,6 +23,8 @@ jobs:
 
       - run: kubectl apply -f ./manifests/busybox.yaml
 
+      - run: kubectl create job --from=cronjob/hello manual-hello
+
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.15.6"
