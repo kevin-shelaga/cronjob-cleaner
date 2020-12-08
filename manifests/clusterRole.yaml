@@ -4,5 +4,8 @@ metadata:
   name: cronjob-cleaner
 rules:
   - apiGroups: [""]
-    resources: ["namespaces", "jobs", "pods", "pods/log"]
+    resources: ["namespaces", "pods", "pods/log"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: ["batch", "extensions"]
+    resources: ["jobs"]
     verbs: ["get", "list", "delete"]
