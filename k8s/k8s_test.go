@@ -95,7 +95,7 @@ func TestGetjobsForCleanup(t *testing.T) {
 	k.Clientset = fake.NewSimpleClientset(namespace, job)
 	result = k.GetjobsForCleanup("default", 4200)
 
-	if result == nil {
+	if result != nil {
 		t.Errorf("result should not be nil")
 	}
 
@@ -124,7 +124,7 @@ func TestGetjobsForCleanup(t *testing.T) {
 	k.Clientset = fake.NewSimpleClientset(namespace, job)
 	result = k.GetjobsForCleanup("default", 4200)
 
-	if result == nil {
+	if result != nil {
 		t.Errorf("result should not be nil")
 	}
 
@@ -153,7 +153,7 @@ func TestGetjobsForCleanup(t *testing.T) {
 	k.Clientset = fake.NewSimpleClientset(namespace, job)
 	result = k.GetjobsForCleanup("default", 0)
 
-	if result == nil {
+	if result != nil {
 		t.Errorf("result should not be nil")
 	}
 }
@@ -257,12 +257,6 @@ func TestGetJobsPod(t *testing.T) {
 	}
 
 	//error getting pods
-	k.Clientset = fake.NewSimpleClientset()
-
-	k.Clientset.CoreV1().(*fakecore.FakeCoreV1).PrependReactor("list", "pods", func(action k8stesting.Action) (handled bool, ret runtime.Object, err error) {
-		return true, &core.PodList{}, errors.New("Error listing pods")
-	})
-
 	job = &batch.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:              "default",
@@ -276,6 +270,12 @@ func TestGetJobsPod(t *testing.T) {
 			CompletionTime: nil,
 		},
 	}
+
+	k.Clientset = fake.NewSimpleClientset(namespace, job, pod1, pod2)
+
+	k.Clientset.CoreV1().(*fakecore.FakeCoreV1).PrependReactor("list", "pods", func(action k8stesting.Action) (handled bool, ret runtime.Object, err error) {
+		return true, &core.PodList{}, errors.New("Error listing pods")
+	})
 
 	result = k.GetJobsPod(*job)
 

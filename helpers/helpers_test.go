@@ -12,7 +12,7 @@ func TestIsInCluster(t *testing.T) {
 		t.Errorf("IsInCluster() = true; want false")
 	}
 
-	os.Setenv("IsInCluster", "true")
+	os.Setenv("InCusterConfig", "true")
 
 	result = IsInCluster()
 
