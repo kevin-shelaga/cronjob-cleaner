@@ -18,7 +18,7 @@ I wrote this cleaner as a way to delete pods for jobs that got "stuck", jobs tha
 
 | Environment Variable | Type    | Description                                                                                                                                         |
 | -------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| InCusterConfig       | bool    | Used to determine which clientset should be used for kubernetes authentication.Defaults to false, set to true to use inside a cluster as a cronjob. |
+| InCusterConfig       | bool    | Used to determine which clientset should be used for kubernetes authentication. Defaults to false, set to true to use inside a cluster as a cronjob. |
 | ActiveDeadlineSecond | float64 | Used to determine which jobs/pods should be identified for cleanup. Defaults to 4200.                                                               |
 | GetPodLogs           | bool    | Used to determine if the pods logs should be relogged as Information. Defaults to false.                                                            |
 | LogTail              | int64   | Used to determine the tail of logs that should be relogged, if GetPodLogs is set to true, otherwise it is ignored. Defaults to 100.                 |

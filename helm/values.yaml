@@ -1,0 +1,39 @@
+jobs:
+  - name: cronjob-cleaner
+    image:
+      repository: kevinshelaga/cronjob-cleaner
+      tag: 0.1-alpine3.12
+      imagePullPolicy: IfNotPresent
+    schedule: "*/1 * * * *"
+    failedJobsHistoryLimit: 1
+    successfulJobsHistoryLimit: 3
+    startingDeadlineSeconds: 3600
+    concurrencyPolicy: Forbid
+    restartPolicy: OnFailure
+    securityContext: {}
+    resources:
+      limits:
+        cpu: 200m
+        memory: 0.2Gi
+      requests:
+        cpu: 100m
+        memory: 0.1Gi
+    env:
+      - name: InCusterConfig
+        value: "true"
+      - name: "ActiveDeadlineSecond"
+        value: "4200"
+      - name: "GetPodLogs"
+        value: "true"
+      - name: "LogTail"
+        value: "100"
+      - name: "DeleteJob"
+        value: "false"
+      - name: "DeletePod"
+        value: "true"
+serviceAccount:
+  name: cronjob-cleaner
+clusterRole:
+  name: cronjob-cleaner
+clusterRoleBinding:
+  name: cronjob-cleaner
