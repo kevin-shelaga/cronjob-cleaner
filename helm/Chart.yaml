@@ -1,0 +1,11 @@
+apiVersion: v2
+name: cronjob-cleaner
+description: A chart for cronjob-cleaner
+version: 0.1
+keywords:
+  - cron
+home: "https://github.com/kevin-shelaga"
+sources:
+  - "https://github.com/kevin-shelaga"
+maintainers:
+  - name: kevin-shelaga
