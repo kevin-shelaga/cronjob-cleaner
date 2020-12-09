@@ -60,6 +60,7 @@ jobs:
         run: |-
           ./kustomize edit set image kevinshelaga/$IMAGE:tag=kevinshelaga/$IMAGE:$VERSION
           ./kustomize build . | kubectl -n $K8S_NAMESPACE apply -f -
+          ./kustomize build . | kubectl -n $K8S_NAMESPACE delete -f -
 
       #Test helm install
       - uses: azure/setup-helm@v1
