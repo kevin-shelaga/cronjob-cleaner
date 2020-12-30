@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/kevin-shelaga/cronjob-cleaner/helpers"
 	"github.com/kevin-shelaga/cronjob-cleaner/k8s"
@@ -40,7 +41,27 @@ func main() {
 				}
 
 				if helpers.ShouldDeletePod() {
-					k.DeletePod(p)
+					if _, ok := j.Labels["deleted-pod-timestamp"]; !ok {
+						k.LabelJob(j)
+						k.DeletePod(p)
+					} else {
+						logging.Warning("Pod previously deleted!")
+
+						i, err := strconv.ParseInt(j.Labels["deleted-pod-timestamp"], 10, 64)
+						if err != nil {
+							logging.Error(err.Error())
+						}
+						tm := time.Unix(i, 0)
+
+						if time.Now().Sub(tm.UTC()).Seconds() > activeDeadlineSeconds {
+							logging.Warning("Pod was deleted " + strconv.FormatFloat(time.Now().Sub(tm.UTC()).Seconds(), 'f', 6, 64) + " seconds ago and now exceeds to ActiveDeadlineSeconds of " + strconv.FormatFloat(activeDeadlineSeconds, 'f', 6, 64) + " seconds ago, pod will be deleted again!")
+							k.LabelJob(j)
+							k.DeletePod(p)
+						} else {
+							logging.Warning("Pod will not be deleted again this time!")
+						}
+
+					}
 				}
 
 				if helpers.ShouldDeleteJob() {
