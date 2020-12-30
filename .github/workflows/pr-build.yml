@@ -9,7 +9,7 @@ on:
 env:
   IMAGE: cronjob-cleaner
   K8S_NAMESPACE: monitoring
-  VERSION: 0.1-alpine3.12
+  VERSION: 0.1
 
 jobs:
   build:

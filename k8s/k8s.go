@@ -19,6 +19,7 @@ import (
 	rest "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	"k8s.io/client-go/util/retry"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth" //all auths
 )
@@ -203,4 +204,28 @@ func (k KubernetesAPI) DeleteJob(job batch.Job) {
 		return
 	}
 	logging.Warning("Deleted jod " + job.Name + "!")
+}
+
+//LabelJob labels a job when the underlying pod has been identified for cleanup
+func (k KubernetesAPI) LabelJob(job batch.Job) {
+
+	logging.Warning("Labeling job " + job.Name + "...")
+
+	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		result, getErr := k.Clientset.BatchV1().Jobs(job.Namespace).Get(context.TODO(), job.Name, metav1.GetOptions{})
+		if getErr != nil {
+			logging.Error("Failed to get latest version of Job: " + getErr.Error())
+		}
+
+		time.Now().UnixNano()
+		result.Labels["deleted-pod-timestamp"] = strconv.FormatInt(time.Now().Unix(), 10)
+
+		_, updateErr := k.Clientset.BatchV1().Jobs(job.Namespace).Update(context.TODO(), result, metav1.UpdateOptions{})
+		return updateErr
+	})
+	if retryErr != nil {
+		logging.Error("Update failed: " + retryErr.Error())
+	}
+
+	logging.Warning("Labeled pod " + job.Name + "!")
 }

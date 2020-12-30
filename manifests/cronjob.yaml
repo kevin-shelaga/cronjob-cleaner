@@ -5,9 +5,9 @@ metadata:
   namespace: monitoring
   labels:
     app: cronjob-cleaner
-  annotations:
-    sidecar.istio.io/inject: "false"
-    linkerd.io/inject: disabled
+  # annotations:
+  #   sidecar.istio.io/inject: "false"
+  #   linkerd.io/inject: disabled
 spec:
   schedule: "*/1 * * * *"
   startingDeadlineSeconds: 3600
@@ -16,17 +16,17 @@ spec:
     metadata:
       labels:
         app: cronjob-cleaner
-      annotations:
-        sidecar.istio.io/inject: "false"
-        linkerd.io/inject: disabled
+      # annotations:
+      #   sidecar.istio.io/inject: "false"
+      #   linkerd.io/inject: disabled
     spec:
       template:
         metadata:
           labels:
             app: cronjob-cleaner
-          annotations:
-            sidecar.istio.io/inject: "false"
-            linkerd.io/inject: disabled
+          # annotations:
+          #   sidecar.istio.io/inject: "false"
+          #   linkerd.io/inject: disabled
         spec:
           serviceAccountName: cronjob-cleaner
           containers:
