@@ -2,7 +2,7 @@ jobs:
   - name: cronjob-cleaner
     image:
       repository: kevinshelaga/cronjob-cleaner
-      tag: 0.1-alpine3.12
+      tag: 0.1
       imagePullPolicy: IfNotPresent
     schedule: "*/1 * * * *"
     failedJobsHistoryLimit: 1
