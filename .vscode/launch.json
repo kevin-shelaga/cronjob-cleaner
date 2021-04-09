@@ -15,6 +15,7 @@
                 "ActiveDeadlineSecond": 4200,
                 "GetPodLogs": true,
                 "LogTail": 100,
+                "CleanFailedJob": true,
                 "DeleteJob": true,
                 "DeletePod": true
             },

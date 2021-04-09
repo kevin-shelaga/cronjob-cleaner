@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"io"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -133,6 +134,12 @@ func (k KubernetesAPI) GetjobsForCleanup(namespace string, activeDeadlineSeconds
 			}
 		} else {
 			logging.Information("Job " + j.Name + " is not active")
+		}
+
+		cleanFailedJob, _ := strconv.ParseBool(os.Getenv("CleanFailedJob"))
+		if cleanFailedJob == true && j.Status.Failed == 1 {
+			logging.Warning("Job " + j.Name + " has been flagged for cleanup due to being in a failed state")
+			jobsToCleanup = append(jobsToCleanup, j)
 		}
 	}
 
