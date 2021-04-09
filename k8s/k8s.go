@@ -156,15 +156,19 @@ func (k KubernetesAPI) GetJobsPod(job batch.Job) *core.PodList {
 		return nil
 	}
 
-	if len(pods.Items) > 1 {
-		logging.Error("Found more than 1 pod matching label " + ("job-name:" + job.Name) + ", cleanup will be skipped")
+	if pods != nil && len(pods.Items) > 0 {
+		if len(pods.Items) > 1 {
+			logging.Error("Found more than 1 pod matching label " + ("job-name:" + job.Name) + ", cleanup will be skipped")
 
+			return nil
+		}
+
+		logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
+
+		return pods
+	} else {
 		return nil
 	}
-
-	logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
-
-	return pods
 }
 
 //GetPodLogs logs a list of logs for a given pod name
