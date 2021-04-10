@@ -3,6 +3,7 @@ package k8s
 import (
 	// "strconv"
 	"errors"
+	"os"
 	"testing"
 	"time"
 
@@ -157,6 +158,37 @@ func TestGetjobsForCleanup(t *testing.T) {
 		t.Errorf("result should not be nil")
 	}
 
+	//one job - failed
+	os.Setenv("CleanFailedJob", "true")
+
+	namespace = &core.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "default",
+			Annotations: map[string]string{},
+		},
+	}
+
+	job = &batch.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:              "default",
+			Namespace:         "default",
+			Annotations:       map[string]string{},
+			CreationTimestamp: metav1.NewTime(time.Now()),
+		},
+		Status: batch.JobStatus{
+			Active:         0,
+			Failed:         1,
+			CompletionTime: nil,
+		},
+	}
+
+	k.Clientset = fake.NewSimpleClientset(namespace, job)
+	result = k.GetjobsForCleanup("default", 0)
+
+	if result == nil {
+		t.Errorf("result should not be nil")
+	}
+
 	//no job - error
 	k.Clientset = fake.NewSimpleClientset()
 
@@ -263,6 +295,38 @@ func TestGetJobsPod(t *testing.T) {
 	}
 
 	k.Clientset = fake.NewSimpleClientset(namespace, job, pod1, pod2)
+	result = k.GetJobsPod(*job)
+
+	if result != nil {
+		t.Errorf("result should be nil")
+	}
+
+	//no pods
+	namespace = &core.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "default",
+			Annotations: map[string]string{},
+		},
+	}
+
+	label = map[string]string{}
+	label["job-name"] = "default"
+
+	job = &batch.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:              "default",
+			Namespace:         "default",
+			Annotations:       map[string]string{},
+			CreationTimestamp: metav1.NewTime(time.Now()),
+		},
+		Status: batch.JobStatus{
+			Active:         1,
+			Failed:         0,
+			CompletionTime: nil,
+		},
+	}
+
+	k.Clientset = fake.NewSimpleClientset(namespace, job)
 	result = k.GetJobsPod(*job)
 
 	if result != nil {

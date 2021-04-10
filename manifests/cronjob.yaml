@@ -41,10 +41,12 @@ spec:
                   value: "true"
                 - name: "LogTail"
                   value: "100"
+                - name: "CleanFailedJob"
+                  value: "true"
                 - name: "DeleteJob"
-                  value: "false"
+                  value: "true"
                 - name: "DeletePod"
-                  value: "true" 
+                  value: "true"
               resources:
                 limits:
                   cpu: 200m

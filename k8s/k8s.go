@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"io"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -134,6 +135,12 @@ func (k KubernetesAPI) GetjobsForCleanup(namespace string, activeDeadlineSeconds
 		} else {
 			logging.Information("Job " + j.Name + " is not active")
 		}
+
+		cleanFailedJob, _ := strconv.ParseBool(os.Getenv("CleanFailedJob"))
+		if cleanFailedJob == true && j.Status.Failed == 1 {
+			logging.Warning("Job " + j.Name + " has been flagged for cleanup due to being in a failed state")
+			jobsToCleanup = append(jobsToCleanup, j)
+		}
 	}
 
 	return jobsToCleanup
@@ -149,15 +156,19 @@ func (k KubernetesAPI) GetJobsPod(job batch.Job) *core.PodList {
 		return nil
 	}
 
-	if len(pods.Items) > 1 {
-		logging.Error("Found more than 1 pod matching label " + ("job-name:" + job.Name) + ", cleanup will be skipped")
+	if pods != nil && len(pods.Items) > 0 {
+		if len(pods.Items) > 1 {
+			logging.Error("Found more than 1 pod matching label " + ("job-name:" + job.Name) + ", cleanup will be skipped")
 
+			return nil
+		}
+
+		logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
+
+		return pods
+	} else {
 		return nil
 	}
-
-	logging.Information("Found pod " + pods.Items[0].Name + " for job " + job.Name + " with label " + ("job-name:" + job.Name))
-
-	return pods
 }
 
 //GetPodLogs logs a list of logs for a given pod name
