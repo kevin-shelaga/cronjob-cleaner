@@ -66,10 +66,10 @@ func main() {
 						}
 					}
 				}
+			}
 
-				if helpers.ShouldDeleteJob() {
-					k.DeleteJob(j)
-				}
+			if helpers.ShouldDeleteJob() {
+				k.DeleteJob(j)
 			}
 		}
 	}
