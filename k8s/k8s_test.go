@@ -301,6 +301,38 @@ func TestGetJobsPod(t *testing.T) {
 		t.Errorf("result should be nil")
 	}
 
+	//no pods
+	namespace = &core.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "default",
+			Annotations: map[string]string{},
+		},
+	}
+
+	label = map[string]string{}
+	label["job-name"] = "default"
+
+	job = &batch.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:              "default",
+			Namespace:         "default",
+			Annotations:       map[string]string{},
+			CreationTimestamp: metav1.NewTime(time.Now()),
+		},
+		Status: batch.JobStatus{
+			Active:         1,
+			Failed:         0,
+			CompletionTime: nil,
+		},
+	}
+
+	k.Clientset = fake.NewSimpleClientset(namespace, job)
+	result = k.GetJobsPod(*job)
+
+	if result != nil {
+		t.Errorf("result should be nil")
+	}
+
 	//error getting pods
 	job = &batch.Job{
 		ObjectMeta: metav1.ObjectMeta{
