@@ -56,7 +56,7 @@ spec:
                   memory: 0.1Gi
               terminationMessagePath: "/dev/termination-log"
               terminationMessagePolicy: File
-              imagePullPolicy: Always
+              imagePullPolicy: IfNotPresent
               securityContext:
                 privileged: false
           restartPolicy: OnFailure
