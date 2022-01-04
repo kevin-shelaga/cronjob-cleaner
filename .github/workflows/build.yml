@@ -20,6 +20,8 @@ jobs:
       #Setup
       - uses: actions/checkout@v2
       - uses: engineerd/setup-kind@v0.5.0
+        with:
+          config: "./manifests/kind.yaml"
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.16.2"
