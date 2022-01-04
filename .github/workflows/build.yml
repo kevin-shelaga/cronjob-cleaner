@@ -9,7 +9,7 @@ on:
 env:
   IMAGE: cronjob-cleaner
   K8S_NAMESPACE: monitoring
-  VERSION: 0.1
+  VERSION: 0.2
 
 jobs:
   build:
