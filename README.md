@@ -46,7 +46,7 @@ cp -a ./manifests/. .
 #### Use Helm
 
 ```sh
-helm install cronjob-cleaner ./helm -n monitoring
+helm install cronjob-cleaner ./helm -n monitoring --create-namespace
 ```
 
 ## Whats left
