@@ -34,7 +34,7 @@ jobs:
       - name: "DeletePod"
         value: "true"
       - name: "ExcludedNamespaces"
-        value: ""
+        value: "databases"
 serviceAccount:
   name: cronjob-cleaner
 clusterRole:
