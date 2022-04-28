@@ -47,6 +47,8 @@ spec:
                   value: "true"
                 - name: "DeletePod"
                   value: "true"
+                - name: "ExcludedNamespaces"
+                  value: ""
               resources:
                 limits:
                   cpu: 200m

@@ -3,6 +3,7 @@ package helpers
 import (
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -92,4 +93,16 @@ func ShouldDeletePod() bool {
 	}
 
 	return false
+}
+
+//ShouldDeletePod returns GetPodLogs env var or false
+func ExcludedNamespaces() []string {
+	result := os.Getenv("ExcludedNamespaces")
+
+	if result != "" {
+		s := strings.Split(result, ",")
+		return s
+	}
+
+	return nil
 }
