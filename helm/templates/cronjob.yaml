@@ -10,6 +10,7 @@ kind: CronJob
 metadata:
   name: "{{ $job.name }}"
   labels:
+    version: v1
     chart: "{{ $chart_name }}-{{ $chart_version }}"
 spec:
   concurrencyPolicy: {{ $job.concurrencyPolicy }}
@@ -20,6 +21,7 @@ spec:
       template:
         metadata:
           labels:
+            version: v1
             app: {{ $release_name }}
             cron: {{ $job.name }}
         spec:
