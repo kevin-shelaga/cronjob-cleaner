@@ -33,6 +33,8 @@ jobs:
         value: "true"
       - name: "DeletePod"
         value: "true"
+      - name: "ExcludedNamespaces"
+        value: ""
 serviceAccount:
   name: cronjob-cleaner
 clusterRole:

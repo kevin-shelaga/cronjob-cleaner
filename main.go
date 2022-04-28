@@ -21,7 +21,7 @@ func main() {
 	k.Clientset = k.Connect(helpers.IsInCluster())
 
 	logging.Information("Getting namespaces...")
-	namespaces := k.GetNamespaces()
+	namespaces := k.GetNamespaces(helpers.ExcludedNamespaces())
 
 	for _, n := range namespaces {
 		logging.Information("Getting jobs in namespace " + n + "...")

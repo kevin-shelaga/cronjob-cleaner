@@ -5,6 +5,7 @@ metadata:
   namespace: monitoring
   labels:
     app: cronjob-cleaner
+    version: v1
   # annotations:
   #   sidecar.istio.io/inject: "false"
   #   linkerd.io/inject: disabled
@@ -16,6 +17,7 @@ spec:
     metadata:
       labels:
         app: cronjob-cleaner
+        version: v1
       # annotations:
       #   sidecar.istio.io/inject: "false"
       #   linkerd.io/inject: disabled
@@ -24,6 +26,7 @@ spec:
         metadata:
           labels:
             app: cronjob-cleaner
+            version: v1
           # annotations:
           #   sidecar.istio.io/inject: "false"
           #   linkerd.io/inject: disabled
@@ -47,6 +50,8 @@ spec:
                   value: "true"
                 - name: "DeletePod"
                   value: "true"
+                - name: "ExcludedNamespaces"
+                  value: ""
               resources:
                 limits:
                   cpu: 200m

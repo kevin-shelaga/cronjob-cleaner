@@ -32,7 +32,7 @@ func TestGetNamespaces(t *testing.T) {
 
 	//no namespaces
 	var k KubernetesAPI = KubernetesAPI{Clientset: fake.NewSimpleClientset()}
-	result := k.GetNamespaces()
+	result := k.GetNamespaces(nil)
 
 	if result != nil {
 		t.Errorf("result should be nil")
@@ -47,7 +47,7 @@ func TestGetNamespaces(t *testing.T) {
 	}
 
 	k.Clientset = fake.NewSimpleClientset(namespace)
-	result = k.GetNamespaces()
+	result = k.GetNamespaces(nil)
 
 	if result == nil {
 		t.Errorf("result should not be nil")
@@ -60,7 +60,7 @@ func TestGetNamespaces(t *testing.T) {
 		return true, &core.NamespaceList{}, errors.New("Error listing namespaces")
 	})
 
-	result = k.GetNamespaces()
+	result = k.GetNamespaces(nil)
 
 	if result != nil {
 		t.Errorf("result should be nil")

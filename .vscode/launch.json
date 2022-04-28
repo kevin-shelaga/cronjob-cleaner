@@ -11,13 +11,14 @@
             "mode": "auto",
             "program": "${workspaceFolder}/main.go",
             "env": {
-                "InCusterConfig": false,
-                "ActiveDeadlineSecond": 4200,
-                "GetPodLogs": true,
-                "LogTail": 100,
-                "CleanFailedJob": true,
-                "DeleteJob": true,
-                "DeletePod": true
+                "InCusterConfig": "false",
+                "ActiveDeadlineSecond": "4200",
+                "GetPodLogs": "true",
+                "LogTail": "100",
+                "CleanFailedJob": "true",
+                "DeleteJob": "true",
+                "DeletePod": "true",
+                "ExcludedNamespaces": "databases"
             },
             "args": []
         }

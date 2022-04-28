@@ -28,7 +28,7 @@ import (
 //k8s interface for k8s package
 type k8s interface {
 	Connect(inCluster bool) *kubernetes.Clientset
-	GetNamespaces() []string
+	GetNamespaces([]string) []string
 	GetjobsForCleanup(namespace string, activeDeadlineSeconds float64) []batch.Job
 	GetJobsPod(job batch.Job) *core.PodList
 	GetPodLogs(pod core.Pod, tail *int64)
@@ -96,7 +96,7 @@ func (k KubernetesAPI) Connect(inCluster bool) kubernetes.Interface {
 }
 
 //GetNamespaces returns slice of all namespaces
-func (k KubernetesAPI) GetNamespaces() []string {
+func (k KubernetesAPI) GetNamespaces(excludedNamespaces []string) []string {
 	var result []string
 
 	namespaces, err := k.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
@@ -110,6 +110,21 @@ func (k KubernetesAPI) GetNamespaces() []string {
 		result = append(result, n.Name)
 	}
 
+	//Remove ExcludedNamespaces
+	if excludedNamespaces != nil {
+	loop:
+		for i := 0; i < len(result); i++ {
+			url := result[i]
+			for _, rem := range excludedNamespaces {
+				if url == rem {
+					result = append(result[:i], result[i+1:]...)
+					i-- // Important: decrease index
+					continue loop
+				}
+			}
+		}
+	}
+	
 	return result
 }
 
