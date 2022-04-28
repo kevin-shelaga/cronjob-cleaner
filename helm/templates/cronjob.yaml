@@ -12,11 +12,16 @@ metadata:
   labels:
     version: v1
     chart: "{{ $chart_name }}-{{ $chart_version }}"
+    app: {{ $release_name }}
 spec:
   concurrencyPolicy: {{ $job.concurrencyPolicy }}
   failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit }}
   startingDeadlineSeconds: {{ $job.startingDeadlineSeconds }}
   jobTemplate:
+    metadata:
+      labels:
+        version: v1
+        app: {{ $release_name }}
     spec:
       template:
         metadata:
